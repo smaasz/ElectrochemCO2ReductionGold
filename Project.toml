@@ -1,7 +1,16 @@
 name = "ElectrchemCO2ReductionGold"
 authors = ["Steffen Maass <maassstef@gmail.com>"]
-[compat]
-julia = "1.10.0"
-DrWatson = "2.14.1"
+
 [deps]
 DrWatson = "634d3b9d-ee7a-5ddf-bec9-22491ea816e1"
+ExtendableGrids = "cfc395e8-590f-11e8-1f13-43a2532b2fa8"
+ForwardDiff = "f6369f11-7733-5829-9624-2563aa707210"
+JLD2 = "033835bb-8acc-5ee8-8aae-3f567f8a3819"
+LessUnitful = "f29f6376-6e90-4d80-80c9-fb8ec61203d5"
+LiquidElectrolytes = "5a7dfd8c-b3af-4c8d-a082-d3a774d75e72"
+PreallocationTools = "d236fae5-4411-538c-8e31-a6e3d9e00b46"
+VoronoiFVM = "82b139dc-5afc-11e9-35da-9b9bdfd336f3"
+
+[compat]
+DrWatson = "2.14.1"
+julia = "1.10.0"
