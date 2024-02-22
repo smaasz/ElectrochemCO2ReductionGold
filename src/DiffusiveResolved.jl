@@ -215,12 +215,6 @@ begin # definition of charge numbers
 	z[iCO₂] = 0
 end
 
-begin # henry constants
-	const henry_const = ones(Float64, nc)
-	henry_const[iCO] = 9.7e-6 * ufac"mol / m^3 / Pa"
-	henry_const[iCO₂] = 3.3e-4 * ufac"mol / m^3 / Pa"
-end
-
 begin # bulk reaction coefficents
 	const γ = zeros(Int64, nr, nc)
 	const γH₂O = zeros(Int64, nr)
@@ -254,16 +248,10 @@ begin # bulk reaction coefficents
 end
 
 begin # bulk rate constants
-	const ke = [(4.44e7 / ufac"55.4M"), (4.66e3 / ufac"55.4M"), (4.44e-7 * ufac"55.4M"), (4.66e-5 * ufac"55.4M"), (1.0e-14 * ufac"(55.4M)")]
-	const kf = [(5.93e3 / ufac"55.4M" / ufac"s"), (1.0e8 / ufac"55.4M" / ufac"s"), 3.7e-2 / ufac"s", (59.44e3 / ufac"s"), (2.4e-5 * ufac"55.4M" / ufac"s")]
+	const ke = [4.44e7 / (ufac"mol/dm^3"), 4.66e3 / (ufac"mol/dm^3"), 4.44e-7 * (ufac"mol/dm^3"), 4.66e-5 / (ufac"mol/dm^3"), 1.0e-14 * (ufac"mol/dm^3")^2]
+	const kf = [5.93e3 / (ufac"mol/ dm^3 / s"), 1.0e8 / (ufac"mol / dm^3 / s"), 3.7e-2 / ufac"s", 59.44e3 / (ufac"mol / dm^3 / s"), 2.4e-5 * (ufac"mol / dm^3 / s")]
 	const kb = kf ./ ke
 end
-
-# begin # bulk rate constants
-# 	const ke = [4.44e7, 4.66e3, 4.44e-7, 4.66e-5, 1.0e-14]
-# 	const kf = [5.93e3, 1.0e8, 3.7e-2, 59.44e3, 2.4e-5]
-# 	const kb = kf ./ ke
-# end
 
 begin # bulk diffusion coefficents
 	const D = zeros(Float64, nc)
@@ -338,12 +326,12 @@ const hbond_consts = [
 	(; a = 0.00226896383 / (ufac"μA/cm^2"), b = -9.0295682e-05 / (ufac"μA/cm^2")^2),
 ]
 
-const voltages = (-0.15:0.01:0.0)
+const voltages = (-1.5:0.1:0.0)
 
 function simulate(; μ°, μ°ₛ, μ°H₂O, μ°TS, κ, v, activitytype, p_bulk = 0.0, pscale = 1.0e9, hmin = 1.0e-6 * ufac"μm", max_round = 1000, maxiters = 100, reltol = 1.0e-10, abstol = 1.0e-10, tol_round = 1.0e-10, tol_mono = 1.0e-10, damp_initial = 0.1, damp_growth = 1.1)
 
 	# grid
-	solutiongrid =  let
+	grid =  let
 		X = geomspace(0, L, hmin, hmax)
 		simplexgrid(X)
 	end
@@ -362,12 +350,12 @@ function simulate(; μ°, μ°ₛ, μ°H₂O, μ°TS, κ, v, activitytype, p_bul
 	end
 
 
-	cell = PNPSystem(solutiongrid; bcondition = halfcellbc, reaction, celldata, unknown_storage=:dense)
+	cell = PNPSystem(grid; bcondition = halfcellbc, reaction, celldata, unknown_storage=:dense)
 
 	solver_control = (; max_round, maxiters, reltol, abstol, tol_round, tol_mono, damp_initial, damp_growth)
 
 	result = ivsweep(cell; voltages, store_solutions=true, solver_control...)
-	return solutiongrid, result
+	return result
 end
 
 
@@ -391,25 +379,24 @@ begin # reaction
 		
 		p = (u[ip]) * pscale - p_bulk
 		@views c₀, cbar = c0_barc(u[1:nc], data)
-		
-		for ic in 1:nc # contributions of dissolved species
-			𝔞 =  u[ic] / cbar * exp(v[ic] * p / RT)
-			for ir in 1:nr
+
+		c = 1/(1-v[iK⁺]*(u[iK⁺]))
+		for ic in 1:nc
+			for ir in 1:nreactions(data)
 				if γ[ir, ic] < 0
-					𝔞educts[ir] *= 𝔞^(-γ[ir, ic])
+					𝔞educts[ir] *= (c * u[ic])^(-γ[ir, ic])
 				elseif γ[ir, ic] > 0
-					𝔞products[ir] *= 𝔞^γ[ir, ic]
+					𝔞products[ir] *= (c * u[ic])^γ[ir, ic]
 				end
 			end
 		end
-	
-		for ir in 1:nr
-			𝔞H₂O =  1.0#c₀ / cbar * exp(v0 * p / RT)
-			if γH₂O[ir] < 0
-				𝔞educts[ir] *= 𝔞H₂O^(-γH₂O[ir])
-			elseif γH₂O[ir] > 0
-				𝔞products[ir] *= 𝔞H₂O^(γH₂O[ir])
-			end
+
+		for ir in 1:NReactions
+		# if γH₂O[ir] < 0
+		# 	𝔞educts[ir] *= (c₀)^(-γH₂O[ir])
+		# elseif γH₂O[ir] > 0
+		# 	𝔞products[ir] *= (c₀)^(γH₂O[ir])
+		# end
 			R[ir] = kf[ir] * 𝔞educts[ir] - kb[ir] * 𝔞products[ir]
 		end
 
@@ -458,9 +445,9 @@ begin # surface reaction
 		for ia in 1:na
 			(; a, b) = hbond_consts[ia]
 			Δμσ = (a * σ + b * σ^2) * ph"e * N_A"
-			𝔞ₛ = isprotonorhydroxide(ia) ? u[ia] / cbar : u[nc + ia] / cbarₛ * (cbarₛ / cVₛ)^ω[ia]
+			𝔞ₛ = (ia == 2 | ia == 6) ? u[ia] / cbar : u[nc + ia] / cbarₛ * (cbarₛ / cVₛ)^ω[ia]
 			for ir in 1:nrₛ
-				Δᵣμᶿₛ[ir] += isprotonorhydroxide(ia) ? γₛ[ir, ia] * (μ°[ia] + v[ia] * p) : γₛ[ir, ia] * (μ°ₛ[ia] + Δμσ)
+				Δᵣμᶿₛ[ir] += (ia == 2 | ia == 6) ? γₛ[ir, ia] * (μ°[ia] + v[ia] * p) : γₛ[ir, ia] * (μ°ₛ[ia] + Δμσ)
 				if γₛ[ir, ia] < 0
 					𝔞ₛeducts[ir] *= 𝔞ₛ^(-γₛ[ir, ia])
 				elseif γₛ[ir, ia] > 0
@@ -470,7 +457,7 @@ begin # surface reaction
 			
 			if ia <= nc # adsorption rates
 				𝔞ₛ = u[nc + ia] / cbarₛ * (cbarₛ / cVₛ)^ω[ia]
-				𝔞 = u[ia] / cbar / henry_const[ia] / ufac"bar"
+				𝔞 = u[ia] / cbar
 				Δᵣμᶿₐ = μ°ₛ[ia] + Δμσ - μ°[ia] - v[ia] * p
 				β = ismissing(βₐ[ia]) ? (Δᵣμᶿₐ > 0 ? 1.0 : 0.0) : βₐ[ia]
 				Nₛ[ia] = k°ₐ[ia] * (exp(-1 / RT * (ℬₐ[ia] + β * Δᵣμᶿₐ)) * 𝔞 
@@ -496,8 +483,14 @@ begin # surface reaction
 		Rₛ[2] *= c0/cbar
 		
 		for ia in 1:na # production rates of the surface species
-			for ir in 1:nrₛ
-				f[isprotonorhydroxide(ia) ? ia : nc + ia] -= γₛ[ir, ia] * Rₛ[ir]
+			if (ia == 2 | ia == 6)
+				for ir in 1:nrₛ
+					f[ia] -= γₛ[ir, ia] * Rₛ[ir]
+				end
+			else
+				for ir in 1:nrₛ
+					f[nc + ia] 	-= γₛ[ir, ia] * Rₛ[ir]
+				end
 			end
 			if ia <= nc
 				f[nc + ia] 	-= Nₛ[ia]
@@ -526,8 +519,6 @@ end
 
 
 ################### Utility Functions ###########################
-
-isprotonorhydroxide(ia) = (ia == iOH⁻ || ia == iH⁺)
 
 function cVₛ_barcₛ(cₛ, data)
 	(; ω, ωM, aM) = data
