@@ -1,4 +1,4 @@
-module DiffusiveResolvedMTK begin
+module DiffusiveResolvedMTK
 using ModelingToolkit, DynamicQuantities
 using IfElse
 
@@ -64,21 +64,31 @@ rrate(R0, β, A) = R0 * (rexp(-β * A) - rexp((1 - β) * A))
 @connector ElectrolyteInterface begin
     @constants begin
         R       = 8.31446261815324,     [unit = u"m^2 * kg / s^2 / K / mol"]
-        p_bulk  = 0.0,                  [unit = u"Pa"]
+        p°      = 0.0,                  [unit = u"Pa"]
         F       = 96485.33212331001,    [unit = u"s * A / mol"]
     end
     @parameters begin
-        z[1:4]  = [1, 2, 3, -2]
+        # z[1:4]  = [1, 2, 3, -2]
+        # v0      = 1.0 / 55.4,                       [unit = u"dm^3 / mol"]
+        # v[1:4]  = [1.0, 1.0, 1.0, 1.0] ./ 55.4,     [unit = u"dm^3/mol"]
+        # κ[1:4]  = [0, 0, 0, 0]  
+        # C°      = 1.0,                              [unit = u"mol / dm^3"]
+        # Gf[1:4] = [0.0, 0.0, 0.0, 0.0],             [unit = u"J / mol"]
+        # M0      = 18.0153,                          [unit = u"g / mol"]
+        # M[1:4]  = [1.0, 1.0, 1.0, 1.0] .* 18.0153,  [unit = u"g / mol"]
+        # T       = 298.0,                            [unit = u"K"]
+        # RT      = R * T,                            [unit = u"m^2 * kg / s^2 / mol"]
+
+        z[1:4]
         v0      = 1.0 / 55.4,                       [unit = u"dm^3 / mol"]
-        v[1:4]  = [1.0, 1.0, 1.0, 1.0] ./ 55.4,     [unit = u"dm^3/mol"]
-        κ[1:4]  = [0, 0, 0, 0]  
+        v[1:4],                                     [unit = u"dm^3/mol"]
+        κ[1:4] 
         C°      = 1.0,                              [unit = u"mol / dm^3"]
-        Gf[1:4] = [0.0, 0.0, 0.0, 0.0],             [unit = u"J / mol"]
+        Gf[1:4],                                    [unit = u"J / mol"]
         M0      = 18.0153,                          [unit = u"g / mol"]
-        M[1:4]  = [1.0, 1.0, 1.0, 1.0] .* 18.0153,  [unit = u"g / mol"]
-        T       = 298.0                             [unit = u"K"]
+        M[1:4],                                     [unit = u"g / mol"]
+        T       = 298.0,                            [unit = u"K"]
         RT      = R * T,                            [unit = u"m^2 * kg / s^2 / mol"]
-    end
     end
     @variables begin
         C(t)[1:4],      [description = "concentration", unit = u"mol / dm^3"]
@@ -91,9 +101,9 @@ rrate(R0, β, A) = R0 * (rexp(-β * A) - rexp((1 - β) * A))
         γ(t)[1:4],      [description = "activity coefficient"]
         μ(t)[1:4],      [description = "chemical potential", unit = u"J / mol"]
 
-        Nflux(t)[1:4],  [description = "molar mass flux", unit = u"mol / s", connect = flow]
-        Dflux(t),       [description = "electric flux", unit = u"V * m", connect = flow]
-        sflux(t),       [description = "stress gradient flux", unit = "kg / s^2", connect = flow]
+        Nflux(t)[1:4],  [description = "molar mass flux", unit = u"mol / s", connect = Flow]
+        Dflux(t),       [description = "electric flux", unit = u"V * m", connect = Flow]
+        sflux(t),       [description = "stress gradient flux", unit = "kg / s^2", connect = Flow]
     end
     @equations begin
         C0 ~ 1.0 / v0 - sum((v ./ v0 .+ κ) .* C)
@@ -122,7 +132,7 @@ end
         p(t),           [description = "pressure", unit = u"bar"]
         ϕ(t),           [description = "electrical potential", unit = u"V"]
         qf(t),          [description = "free charge density", unit = u"C / m^3"]
-        der_C(t)[1:4]   [unit = u"mol / dm^3 / s"]
+        der_C(t)[1:4],  [unit = u"mol / dm^3 / s"]
     end
     @equations begin
         C[1] ~ ei.C[1]
@@ -142,8 +152,6 @@ end
 
         qf ~ ei.Dflux / V
     end
-
-    
 end
 
 @mtkmodel ElectrolyteControlVolumeBoundary begin
@@ -165,11 +173,11 @@ end
     @variables begin
         dϕ(t),          [unit = u"V"]
         dp(t),          [unit = u"bar"]   
-        dμex(t)[1:4]    [unit = u"J / mol"]
+        dμex(t)[1:4],   [unit = u"J / mol"]
 
-        Nflux(t)[1:4],  [description = "molar mass flux", unit = u"mol / s", connect = flow]
-        Dflux(t),       [description = "electric flux", unit = u"V * m", connect = flow]
-        sflux(t),       [description = "stress gradient flux", unit = "kg / s^2", connect = flow]
+        Nflux(t)[1:4],  [description = "molar mass flux", unit = u"mol / s", connect = Flow]
+        Dflux(t),       [description = "electric flux", unit = u"V * m", connect = Flow]
+        sflux(t),       [description = "stress gradient flux", unit = "kg / s^2", connect = Flow]
     end
     @equations begin
         dϕ ~ p.ϕ - n.ϕ
@@ -202,18 +210,18 @@ end
         sflux ~ -n.sflux
         sflux ~ A / h * (dp + (p.qf + n.qf) / 2 * dϕ)
     end
-    
 end
 
 @mtkmodel ElectrolyteBulkBoundary begin
     @constants begin
-        ϕ_bulk = 0.0   [description = "electric potential in the bulk", unit = u"V"]
-        p_bulk = 0.0   [description = "pressure in the bulk", unit = u"bar"]
+        ϕ_bulk = 0.0,  [description = "electric potential in the bulk", unit = u"V"]
+        p_bulk = 0.0,  [description = "pressure in the bulk", unit = u"bar"]
     end
     @parameters begin
         A,                                  [description = "area", unit = u"m^2"]
         h,                                  [description = "distance between collocation points", unit = u"m"]
-        C_bulk[1:4] = [0.001, 0.01, 0.1, 1] [description = "bulk concentrations", unit = u"mol / dm^3"]
+        #C_bulk[1:4] = [0.001, 0.01, 0.1, 1],[description = "bulk concentrations", unit = u"mol / dm^3"]
+        C_bulk[1:4],                        [description = "bulk concentrations", unit = u"mol / dm^3"]
         ϵ = 1.0e-10
     end
     @components begin
@@ -243,9 +251,9 @@ end
 
 @mtkmodel ElectrodeElectrolyteBoundary begin
     @constants begin
-        sc[1:4]     = [0, -1, 1, 0]         [description = "stoichiometric coefficients of the boundary reaction"]
-        R0          = 1.0e-10               [description = "exchange rate constant", unit = u"mol / cm^2 / s"]
-        β           = 0.5                   [description = "transfer coefficient"]
+        sc          = [0, -1, 1, 0],        [description = "stoichiometric coefficients of the boundary reaction"]
+        R0          = 1.0e-10,              [description = "exchange rate constant", unit = u"mol / cm^2 / s"]
+        β           = 0.5,                  [description = "transfer coefficient"]
         F           = 96485.33212331001,    [unit = u"s * A / mol"]
         R           = 8.31446261815324,     [unit = u"m^2 * kg / s^2 / K / mol"]
         eps_0       = 8.8541878128e-12,     [unit = u"A^2 * s^4 / kg / m^3"]
@@ -254,7 +262,7 @@ end
         A,              [description = "area", unit = u"m^2"]
         h,              [description = "distance between collocation points", unit = u"m"]
         ϕ_we,           [description = "electric potential at working electrode", unit = u"V"]
-        T = 298.0       [description = "temperature", unit = u"K"]
+        T = 298.0,      [description = "temperature", unit = u"K"]
         RT = R * T,     [unit = u"m^2 * kg / s^2 / mol"]
         eps_r = 1.0
         ϵ = 1.0e-10
