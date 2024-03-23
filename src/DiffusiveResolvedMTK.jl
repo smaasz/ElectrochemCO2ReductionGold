@@ -223,7 +223,7 @@ end
         Nflux₂(t)       ,[description = "molar mass flux", unit = u"mol / s", connect = Flow]
         Nflux₃(t)       ,[description = "molar mass flux", unit = u"mol / s", connect = Flow]
         Nflux₄(t)       ,[description = "molar mass flux", unit = u"mol / s", connect = Flow]
-        Dflux(t)        ,[description = "electric flux", unit = u"A * s", connect = Flow]
+        Dflux(t)=0.0    ,[description = "electric flux", unit = u"A * s", connect = Flow]
         sflux(t)        ,[description = "stress gradient flux", unit = u"kg / s^2", connect = Flow]
     end
 end
@@ -299,10 +299,10 @@ end
         V, [description = "Volume", unit = u"m^3"]
     end
     @variables begin
-        C₁(t)           ,[description = "concentration", unit = u"mol / m^3"]
-        C₂(t)           ,[description = "concentration", unit = u"mol / m^3"]
-        C₃(t)           ,[description = "concentration", unit = u"mol / m^3"]
-        C₄(t)           ,[description = "concentration", unit = u"mol / m^3"]
+        C₁(t) = 1000.0  ,[description = "concentration", unit = u"mol / m^3"]
+        C₂(t) = 100.0   ,[description = "concentration", unit = u"mol / m^3"]
+        C₃(t) = 100.0   ,[description = "concentration", unit = u"mol / m^3"]
+        C₄(t) = 750.0   ,[description = "concentration", unit = u"mol / m^3"]
         p(t)            ,[description = "pressure", unit = u"Pa"]
         ϕ(t)            ,[description = "electrical potential", unit = u"V"]
         der_C₁(t)       ,[unit = u"mol / m^3 / s"]
@@ -372,37 +372,37 @@ end
         p = ElectrolyteInterface(κ₁=κ₁, κ₂=κ₂, κ₃=κ₃, κ₄=κ₄, eps_r=eps_r, v₁=v₁, v₂=v₂, v₃=v₃, v₄=v₄, Gf₁=Gf₁, Gf₂=Gf₂, Gf₃=Gf₃, Gf₄=Gf₄, M₁=M₁, M₂=M₂, M₃=M₃, M₄=M₄, DC₁=DC₁, DC₂=DC₂, DC₃=DC₃, DC₄=DC₄, RT=RT, z₁=z₁, z₂=z₂, z₃=z₃, z₄=z₄)
     end
     @variables begin
-        dϕ(t),          [unit = u"V"]
-        dp(t),          [unit = u"Pa"]   
-        dμex₁(t),   [unit = u"J / mol"]
-        dμex₂(t),   [unit = u"J / mol"]
-        dμex₃(t),   [unit = u"J / mol"]
-        dμex₄(t),   [unit = u"J / mol"]
+        dϕ(t)       ,[unit = u"V"]
+        dp(t)       ,[unit = u"Pa"]   
+        dμex₁(t)    ,[unit = u"J / mol"]
+        dμex₂(t)    ,[unit = u"J / mol"]
+        dμex₃(t)    ,[unit = u"J / mol"]
+        dμex₄(t)    ,[unit = u"J / mol"]
 
-        p_C0(t),           [unit = u"mol / m^3"]
-        n_C0(t),           [unit = u"mol / m^3"]
+        p_C0(t)     ,[unit = u"mol / m^3"]
+        n_C0(t)     ,[unit = u"mol / m^3"]
 
-        p_Cbar(t),         [unit = u"mol / m^3"]
-        n_Cbar(t),         [unit = u"mol / m^3"]
+        p_Cbar(t)   ,[unit = u"mol / m^3"]
+        n_Cbar(t)   ,[unit = u"mol / m^3"]
 
-        p_qf(t),           [unit = u"A * s / m^3"]
-        n_qf(t),           [unit = u"A * s / m^3"]
+        p_qf(t)     ,[unit = u"A * s / m^3"]
+        n_qf(t)     ,[unit = u"A * s / m^3"]
         
-        p_γ₁(t),       [unit = u"1"]
-        p_γ₂(t),       [unit = u"1"]
-        p_γ₃(t),       [unit = u"1"]
-        p_γ₄(t),       [unit = u"1"]
-        n_γ₁(t),       [unit = u"1"]
-        n_γ₂(t),       [unit = u"1"]
-        n_γ₃(t),       [unit = u"1"]
-        n_γ₄(t),       [unit = u"1"]
+        p_γ₁(t)     ,[unit = u"1"]
+        p_γ₂(t)     ,[unit = u"1"]
+        p_γ₃(t)     ,[unit = u"1"]
+        p_γ₄(t)     ,[unit = u"1"]
+        n_γ₁(t)     ,[unit = u"1"]
+        n_γ₂(t)     ,[unit = u"1"]
+        n_γ₃(t)     ,[unit = u"1"]
+        n_γ₄(t)     ,[unit = u"1"]
 
-        Nflux₁(t),      [description = "molar mass flux", unit = u"mol / s", connect = Flow]
-        Nflux₂(t),      [description = "molar mass flux", unit = u"mol / s", connect = Flow]
-        Nflux₃(t),      [description = "molar mass flux", unit = u"mol / s", connect = Flow]
-        Nflux₄(t),      [description = "molar mass flux", unit = u"mol / s", connect = Flow]
-        Dflux(t),       [description = "electric flux", unit = u"A * s", connect = Flow]
-        sflux(t),       [description = "stress gradient flux", unit = u"kg / s^2", connect = Flow]
+        Nflux₁(t)   ,[description = "molar mass flux", unit = u"mol / s", connect = Flow]
+        Nflux₂(t)   ,[description = "molar mass flux", unit = u"mol / s", connect = Flow]
+        Nflux₃(t)   ,[description = "molar mass flux", unit = u"mol / s", connect = Flow]
+        Nflux₄(t)   ,[description = "molar mass flux", unit = u"mol / s", connect = Flow]
+        Dflux(t)    ,[description = "electric flux", unit = u"A * s", connect = Flow]
+        sflux(t)    ,[description = "stress gradient flux", unit = u"kg / s^2", connect = Flow]
     end
     @equations begin
         p_C0 ~ C0_func([p.C₁, p.C₂, p.C₃, p.C₄], [v₁, v₂, v₃, v₄], v0, [κ₁, κ₂, κ₃, κ₄])
@@ -535,67 +535,167 @@ end
     end
 end
 
-@mtkmodel System begin
-    @parameters begin
-        ϕ_we     ,[description = "electric potential at working electrode", unit = u"V"]
-        ϕ_bulk   ,[description = "electric potential in the bulk", unit = u"V"]
-        p_bulk   ,[description = "pressure in the bulk", unit = u"Pa"]
-        C_bulk₁  ,[description = "bulk concentrations", unit = u"mol / m^3"]
-        C_bulk₂  ,[description = "bulk concentrations", unit = u"mol / m^3"]
-        C_bulk₃  ,[description = "bulk concentrations", unit = u"mol / m^3"]
-        C_bulk₄  ,[description = "bulk concentrations", unit = u"mol / m^3"]
-        A        ,[description = "crossectional area", unit = u"m^2"]
-        κ₁       ,[description = "solvation number", unit=u"1"]
-        κ₂       ,[description = "solvation number", unit=u"1"]
-        κ₃       ,[description = "solvation number", unit=u"1"]
-        κ₄       ,[description = "solvation number", unit=u"1"]
-        eps_r    ,[unit = u"1"]
-        v₁       ,[unit = u"m^3 / mol"]
-        v₂       ,[unit = u"m^3 / mol"]
-        v₃       ,[unit = u"m^3 / mol"]
-        v₄       ,[unit = u"m^3 / mol"]
-        Gf₁      ,[unit = u"J / mol"]
-        Gf₂      ,[unit = u"J / mol"]
-        Gf₃      ,[unit = u"J / mol"]
-        Gf₄      ,[unit = u"J / mol"]
-        M₁       ,[unit = u"kg / mol"]
-        M₂       ,[unit = u"kg / mol"]
-        M₃       ,[unit = u"kg / mol"]
-        M₄       ,[unit = u"kg / mol"]
-        RT       ,[unit = u"m^2 * kg / s^2 / mol"]
-        DC₁      ,[unit = u"m^2 / s"]
-        DC₂      ,[unit = u"m^2 / s"]
-        DC₃      ,[unit = u"m^2 / s"]
-        DC₄      ,[unit = u"m^2 / s"]
-        z₁       ,[description = "charge numbers", unit = u"1"]
-        z₂       ,[description = "charge numbers", unit = u"1"]
-        z₃       ,[description = "charge numbers", unit = u"1"]
-        z₄       ,[description = "charge numbers", unit = u"1"]
-        sc₁      ,[description = "stoichiometric coefficients of the boundary reaction", unit=u"1"]
-        sc₂      ,[description = "stoichiometric coefficients of the boundary reaction", unit=u"1"]
-        sc₃      ,[description = "stoichiometric coefficients of the boundary reaction", unit=u"1"]
-        sc₄      ,[description = "stoichiometric coefficients of the boundary reaction", unit=u"1"]
+# @mtkmodel System begin
+#     @parameters begin
+#         ϕ_we     ,[description = "electric potential at working electrode", unit = u"V"]
+#         ϕ_bulk   ,[description = "electric potential in the bulk", unit = u"V"]
+#         p_bulk   ,[description = "pressure in the bulk", unit = u"Pa"]
+#         C_bulk₁  ,[description = "bulk concentrations", unit = u"mol / m^3"]
+#         C_bulk₂  ,[description = "bulk concentrations", unit = u"mol / m^3"]
+#         C_bulk₃  ,[description = "bulk concentrations", unit = u"mol / m^3"]
+#         C_bulk₄  ,[description = "bulk concentrations", unit = u"mol / m^3"]
+#         A        ,[description = "crossectional area", unit = u"m^2"]
+#         κ₁       ,[description = "solvation number", unit=u"1"]
+#         κ₂       ,[description = "solvation number", unit=u"1"]
+#         κ₃       ,[description = "solvation number", unit=u"1"]
+#         κ₄       ,[description = "solvation number", unit=u"1"]
+#         eps_r    ,[unit = u"1"]
+#         v₁       ,[unit = u"m^3 / mol"]
+#         v₂       ,[unit = u"m^3 / mol"]
+#         v₃       ,[unit = u"m^3 / mol"]
+#         v₄       ,[unit = u"m^3 / mol"]
+#         Gf₁      ,[unit = u"J / mol"]
+#         Gf₂      ,[unit = u"J / mol"]
+#         Gf₃      ,[unit = u"J / mol"]
+#         Gf₄      ,[unit = u"J / mol"]
+#         M₁       ,[unit = u"kg / mol"]
+#         M₂       ,[unit = u"kg / mol"]
+#         M₃       ,[unit = u"kg / mol"]
+#         M₄       ,[unit = u"kg / mol"]
+#         RT       ,[unit = u"m^2 * kg / s^2 / mol"]
+#         DC₁      ,[unit = u"m^2 / s"]
+#         DC₂      ,[unit = u"m^2 / s"]
+#         DC₃      ,[unit = u"m^2 / s"]
+#         DC₄      ,[unit = u"m^2 / s"]
+#         z₁       ,[description = "charge numbers", unit = u"1"]
+#         z₂       ,[description = "charge numbers", unit = u"1"]
+#         z₃       ,[description = "charge numbers", unit = u"1"]
+#         z₄       ,[description = "charge numbers", unit = u"1"]
+#         sc₁      ,[description = "stoichiometric coefficients of the boundary reaction", unit=u"1"]
+#         sc₂      ,[description = "stoichiometric coefficients of the boundary reaction", unit=u"1"]
+#         sc₃      ,[description = "stoichiometric coefficients of the boundary reaction", unit=u"1"]
+#         sc₄      ,[description = "stoichiometric coefficients of the boundary reaction", unit=u"1"]
+#     end
+#     @components begin
+#         e = Electrolyte(;κ₁=κ₁, κ₂=κ₂, κ₃=κ₃, κ₄=κ₄, eps_r=eps_r, v₁=v₁, v₂=v₂, v₃=v₃, v₄=v₄, Gf₁=Gf₁, Gf₂=Gf₂, Gf₃=Gf₃, Gf₄=Gf₄, M₁=M₁, M₂=M₂, M₃=M₃, M₄=M₄, DC₁=DC₁, DC₂=DC₂, DC₃=DC₃, DC₄=DC₄, RT=RT, z₁=z₁, z₂=z₂, z₃=z₃, z₄=z₄)
+#         eeb = ElectrodeElectrolyteBoundary(; A=A, h=1.5e-3, ϕ_we=ϕ_we, sc₁=sc₁, sc₂=sc₂, sc₃=sc₃, sc₄=sc₄, κ₁=κ₁, κ₂=κ₂, κ₃=κ₃, κ₄=κ₄, eps_r=eps_r, v₁=v₁, v₂=v₂, v₃=v₃, v₄=v₄, Gf₁=Gf₁, Gf₂=Gf₂, Gf₃=Gf₃, Gf₄=Gf₄, M₁=M₁, M₂=M₂, M₃=M₃, M₄=M₄, DC₁=DC₁, DC₂=DC₂, DC₃=DC₃, DC₄=DC₄, RT=RT, z₁=z₁, z₂=z₂, z₃=z₃, z₄=z₄)
+#         cv1 = ElectrolyteControlVolume(; V=1.0e-3, κ₁=κ₁, κ₂=κ₂, κ₃=κ₃, κ₄=κ₄, eps_r=eps_r, v₁=v₁, v₂=v₂, v₃=v₃, v₄=v₄, Gf₁=Gf₁, Gf₂=Gf₂, Gf₃=Gf₃, Gf₄=Gf₄, M₁=M₁, M₂=M₂, M₃=M₃, M₄=M₄, DC₁=DC₁, DC₂=DC₂, DC₃=DC₃, DC₄=DC₄, RT=RT, z₁=z₁, z₂=z₂, z₃=z₃, z₄=z₄)
+#         b12 = ElectrolyteControlVolumeBoundary(; A=A, h=1.0e-3, κ₁=κ₁, κ₂=κ₂, κ₃=κ₃, κ₄=κ₄, eps_r=eps_r, v₁=v₁, v₂=v₂, v₃=v₃, v₄=v₄, Gf₁=Gf₁, Gf₂=Gf₂, Gf₃=Gf₃, Gf₄=Gf₄, M₁=M₁, M₂=M₂, M₃=M₃, M₄=M₄, DC₁=DC₁, DC₂=DC₂, DC₃=DC₃, DC₄=DC₄, RT=RT, z₁=z₁, z₂=z₂, z₃=z₃, z₄=z₄)
+#         cv2 = ElectrolyteControlVolume(; V=1.0e-3, κ₁=κ₁, κ₂=κ₂, κ₃=κ₃, κ₄=κ₄, eps_r=eps_r, v₁=v₁, v₂=v₂, v₃=v₃, v₄=v₄, Gf₁=Gf₁, Gf₂=Gf₂, Gf₃=Gf₃, Gf₄=Gf₄, M₁=M₁, M₂=M₂, M₃=M₃, M₄=M₄, DC₁=DC₁, DC₂=DC₂, DC₃=DC₃, DC₄=DC₄, RT=RT, z₁=z₁, z₂=z₂, z₃=z₃, z₄=z₄)
+#         b23 = ElectrolyteControlVolumeBoundary(; A=A, h=1.0e-3, κ₁=κ₁, κ₂=κ₂, κ₃=κ₃, κ₄=κ₄, eps_r=eps_r, v₁=v₁, v₂=v₂, v₃=v₃, v₄=v₄, Gf₁=Gf₁, Gf₂=Gf₂, Gf₃=Gf₃, Gf₄=Gf₄, M₁=M₁, M₂=M₂, M₃=M₃, M₄=M₄, DC₁=DC₁, DC₂=DC₂, DC₃=DC₃, DC₄=DC₄, RT=RT, z₁=z₁, z₂=z₂, z₃=z₃, z₄=z₄)
+#         cv3 = ElectrolyteControlVolume(; V=1.0e-3, κ₁=κ₁, κ₂=κ₂, κ₃=κ₃, κ₄=κ₄, eps_r=eps_r, v₁=v₁, v₂=v₂, v₃=v₃, v₄=v₄, Gf₁=Gf₁, Gf₂=Gf₂, Gf₃=Gf₃, Gf₄=Gf₄, M₁=M₁, M₂=M₂, M₃=M₃, M₄=M₄, DC₁=DC₁, DC₂=DC₂, DC₃=DC₃, DC₄=DC₄, RT=RT, z₁=z₁, z₂=z₂, z₃=z₃, z₄=z₄)
+#         ebb = ElectrolyteBulkBoundary(; A=A, h=1.5e-3, C_bulk₁=C_bulk₁, C_bulk₂=C_bulk₂, C_bulk₃=C_bulk₃, C_bulk₄=C_bulk₄, κ₁=κ₁, κ₂=κ₂, κ₃=κ₃, κ₄=κ₄, eps_r=eps_r, v₁=v₁, v₂=v₂, v₃=v₃, v₄=v₄, Gf₁=Gf₁, Gf₂=Gf₂, Gf₃=Gf₃, Gf₄=Gf₄, M₁=M₁, M₂=M₂, M₃=M₃, M₄=M₄, DC₁=DC₁, DC₂=DC₂, DC₃=DC₃, DC₄=DC₄, RT=RT, z₁=z₁, z₂=z₂, z₃=z₃, z₄=z₄)
+#     end
+#     @equations begin
+#         connect(eeb.ei, cv1.ei)
+#         connect(cv1.ei, b12.n)
+#         connect(b12.p, cv2.ei)
+#         connect(cv2.ei, b23.n)
+#         connect(b23.p, cv3.ei)
+#         connect(cv3.ei, ebb.ei)
+#         connect(cv3.ei, e)
+#     end
+# end
+
+function testsystem(;
+    ϕ_we   ,# = defaults["ϕ_we"],
+    ϕ_bulk ,# = defaults["ϕ_bulk"],
+    p_bulk ,# = defaults["p_bulk"],
+    C_bulk₁,# = defaults["C_bulk₁"],
+    C_bulk₂,# = defaults["C_bulk₂"],
+    C_bulk₃,# = defaults["C_bulk₃"],
+    C_bulk₄,# = defaults["C_bulk₄"],
+    κ₁     ,# = defaults["κ₁"],
+    κ₂     ,# = defaults["κ₂"],
+    κ₃     ,# = defaults["κ₃"],
+    κ₄     ,# = defaults["κ₄"],
+    A      ,# = defaults["A"],
+    eps_r  ,# = defaults["eps_r"],
+    v₁     ,# = defaults["v₁"],
+    v₂     ,# = defaults["v₂"],
+    v₃     ,# = defaults["v₃"],
+    v₄     ,# = defaults["v₄"],
+    Gf₁    ,# = defaults["Gf₁"],
+    Gf₂    ,# = defaults["Gf₂"],
+    Gf₃    ,# = defaults["Gf₃"],
+    Gf₄    ,# = defaults["Gf₄"],
+    M₁     ,# = defaults["M₁"],
+    M₂     ,# = defaults["M₂"],
+    M₃     ,# = defaults["M₃"],
+    M₄     ,# = defaults["M₄"],
+    RT     ,# = defaults["RT"],
+    DC₁    ,# = defaults["DC₁"],
+    DC₂    ,# = defaults["DC₂"],
+    DC₃    ,# = defaults["DC₃"],
+    DC₄    ,# = defaults["DC₄"],
+    z₁     ,# = defaults["z₁"],
+    z₂     ,# = defaults["z₂"],
+    z₃     ,# = defaults["z₃"],
+    z₄     ,# = defaults["z₄"],
+    sc₁    ,# = defaults["sc₁"],
+    sc₂    ,# = defaults["sc₂"],
+    sc₃    ,# = defaults["sc₃"],
+    sc₄    ,# = defaults["sc₄"],
+    name, 
+    N=3
+)
+    ps = @parameters begin
+        ϕ_we     = ϕ_we    ,[description = "electric potential at working electrode", unit = u"V"]
+        ϕ_bulk   = ϕ_bulk  ,[description = "electric potential in the bulk", unit = u"V"]
+        p_bulk   = p_bulk  ,[description = "pressure in the bulk", unit = u"Pa"]
+        C_bulk₁  = C_bulk₁ ,[description = "bulk concentrations", unit = u"mol / m^3"]
+        C_bulk₂  = C_bulk₂ ,[description = "bulk concentrations", unit = u"mol / m^3"]
+        C_bulk₃  = C_bulk₃ ,[description = "bulk concentrations", unit = u"mol / m^3"]
+        C_bulk₄  = C_bulk₄ ,[description = "bulk concentrations", unit = u"mol / m^3"]
+        A        = A       ,[description = "crossectional area", unit = u"m^2"]
+        κ₁       = κ₁      ,[description = "solvation number", unit=u"1"]
+        κ₂       = κ₂      ,[description = "solvation number", unit=u"1"]
+        κ₃       = κ₃      ,[description = "solvation number", unit=u"1"]
+        κ₄       = κ₄      ,[description = "solvation number", unit=u"1"]
+        eps_r    = eps_r   ,[unit = u"1"]
+        v₁       = v₁      ,[unit = u"m^3 / mol"]
+        v₂       = v₂      ,[unit = u"m^3 / mol"]
+        v₃       = v₃      ,[unit = u"m^3 / mol"]
+        v₄       = v₄      ,[unit = u"m^3 / mol"]
+        Gf₁      = Gf₁     ,[unit = u"J / mol"]
+        Gf₂      = Gf₂     ,[unit = u"J / mol"]
+        Gf₃      = Gf₃     ,[unit = u"J / mol"]
+        Gf₄      = Gf₄     ,[unit = u"J / mol"]
+        M₁       = M₁      ,[unit = u"kg / mol"]
+        M₂       = M₂      ,[unit = u"kg / mol"]
+        M₃       = M₃      ,[unit = u"kg / mol"]
+        M₄       = M₄      ,[unit = u"kg / mol"]
+        RT       = RT      ,[unit = u"m^2 * kg / s^2 / mol"]
+        DC₁      = DC₁     ,[unit = u"m^2 / s"]
+        DC₂      = DC₂     ,[unit = u"m^2 / s"]
+        DC₃      = DC₃     ,[unit = u"m^2 / s"]
+        DC₄      = DC₄     ,[unit = u"m^2 / s"]
+        z₁       = z₁      ,[description = "charge numbers", unit = u"1"]
+        z₂       = z₂      ,[description = "charge numbers", unit = u"1"]
+        z₃       = z₃      ,[description = "charge numbers", unit = u"1"]
+        z₄       = z₄      ,[description = "charge numbers", unit = u"1"]
+        sc₁      = sc₁     ,[description = "stoichiometric coefficients of the boundary reaction", unit=u"1"]
+        sc₂      = sc₂     ,[description = "stoichiometric coefficients of the boundary reaction", unit=u"1"]
+        sc₃      = sc₃     ,[description = "stoichiometric coefficients of the boundary reaction", unit=u"1"]
+        sc₄      = sc₄     ,[description = "stoichiometric coefficients of the boundary reaction", unit=u"1"]
     end
-    @components begin
-        e = Electrolyte(;κ₁=κ₁, κ₂=κ₂, κ₃=κ₃, κ₄=κ₄, eps_r=eps_r, v₁=v₁, v₂=v₂, v₃=v₃, v₄=v₄, Gf₁=Gf₁, Gf₂=Gf₂, Gf₃=Gf₃, Gf₄=Gf₄, M₁=M₁, M₂=M₂, M₃=M₃, M₄=M₄, DC₁=DC₁, DC₂=DC₂, DC₃=DC₃, DC₄=DC₄, RT=RT, z₁=z₁, z₂=z₂, z₃=z₃, z₄=z₄)
-        eeb = ElectrodeElectrolyteBoundary(; A=A, h=1.5e-3, ϕ_we=ϕ_we, sc₁=sc₁, sc₂=sc₂, sc₃=sc₃, sc₄=sc₄, κ₁=κ₁, κ₂=κ₂, κ₃=κ₃, κ₄=κ₄, eps_r=eps_r, v₁=v₁, v₂=v₂, v₃=v₃, v₄=v₄, Gf₁=Gf₁, Gf₂=Gf₂, Gf₃=Gf₃, Gf₄=Gf₄, M₁=M₁, M₂=M₂, M₃=M₃, M₄=M₄, DC₁=DC₁, DC₂=DC₂, DC₃=DC₃, DC₄=DC₄, RT=RT, z₁=z₁, z₂=z₂, z₃=z₃, z₄=z₄)
-        cv1 = ElectrolyteControlVolume(; V=1.0e-3, κ₁=κ₁, κ₂=κ₂, κ₃=κ₃, κ₄=κ₄, eps_r=eps_r, v₁=v₁, v₂=v₂, v₃=v₃, v₄=v₄, Gf₁=Gf₁, Gf₂=Gf₂, Gf₃=Gf₃, Gf₄=Gf₄, M₁=M₁, M₂=M₂, M₃=M₃, M₄=M₄, DC₁=DC₁, DC₂=DC₂, DC₃=DC₃, DC₄=DC₄, RT=RT, z₁=z₁, z₂=z₂, z₃=z₃, z₄=z₄)
-        b12 = ElectrolyteControlVolumeBoundary(; A=A, h=1.0e-3, κ₁=κ₁, κ₂=κ₂, κ₃=κ₃, κ₄=κ₄, eps_r=eps_r, v₁=v₁, v₂=v₂, v₃=v₃, v₄=v₄, Gf₁=Gf₁, Gf₂=Gf₂, Gf₃=Gf₃, Gf₄=Gf₄, M₁=M₁, M₂=M₂, M₃=M₃, M₄=M₄, DC₁=DC₁, DC₂=DC₂, DC₃=DC₃, DC₄=DC₄, RT=RT, z₁=z₁, z₂=z₂, z₃=z₃, z₄=z₄)
-        cv2 = ElectrolyteControlVolume(; V=1.0e-3, κ₁=κ₁, κ₂=κ₂, κ₃=κ₃, κ₄=κ₄, eps_r=eps_r, v₁=v₁, v₂=v₂, v₃=v₃, v₄=v₄, Gf₁=Gf₁, Gf₂=Gf₂, Gf₃=Gf₃, Gf₄=Gf₄, M₁=M₁, M₂=M₂, M₃=M₃, M₄=M₄, DC₁=DC₁, DC₂=DC₂, DC₃=DC₃, DC₄=DC₄, RT=RT, z₁=z₁, z₂=z₂, z₃=z₃, z₄=z₄)
-        b23 = ElectrolyteControlVolumeBoundary(; A=A, h=1.0e-3, κ₁=κ₁, κ₂=κ₂, κ₃=κ₃, κ₄=κ₄, eps_r=eps_r, v₁=v₁, v₂=v₂, v₃=v₃, v₄=v₄, Gf₁=Gf₁, Gf₂=Gf₂, Gf₃=Gf₃, Gf₄=Gf₄, M₁=M₁, M₂=M₂, M₃=M₃, M₄=M₄, DC₁=DC₁, DC₂=DC₂, DC₃=DC₃, DC₄=DC₄, RT=RT, z₁=z₁, z₂=z₂, z₃=z₃, z₄=z₄)
-        cv3 = ElectrolyteControlVolume(; V=1.0e-3, κ₁=κ₁, κ₂=κ₂, κ₃=κ₃, κ₄=κ₄, eps_r=eps_r, v₁=v₁, v₂=v₂, v₃=v₃, v₄=v₄, Gf₁=Gf₁, Gf₂=Gf₂, Gf₃=Gf₃, Gf₄=Gf₄, M₁=M₁, M₂=M₂, M₃=M₃, M₄=M₄, DC₁=DC₁, DC₂=DC₂, DC₃=DC₃, DC₄=DC₄, RT=RT, z₁=z₁, z₂=z₂, z₃=z₃, z₄=z₄)
-        ebb = ElectrolyteBulkBoundary(; A=A, h=1.5e-3, C_bulk₁=C_bulk₁, C_bulk₂=C_bulk₂, C_bulk₃=C_bulk₃, C_bulk₄=C_bulk₄, κ₁=κ₁, κ₂=κ₂, κ₃=κ₃, κ₄=κ₄, eps_r=eps_r, v₁=v₁, v₂=v₂, v₃=v₃, v₄=v₄, Gf₁=Gf₁, Gf₂=Gf₂, Gf₃=Gf₃, Gf₄=Gf₄, M₁=M₁, M₂=M₂, M₃=M₃, M₄=M₄, DC₁=DC₁, DC₂=DC₂, DC₃=DC₃, DC₄=DC₄, RT=RT, z₁=z₁, z₂=z₂, z₃=z₃, z₄=z₄)
-    end
-    @equations begin
-        connect(eeb.ei, cv1.ei)
-        connect(cv1.ei, b12.n)
-        connect(b12.p, cv2.ei)
-        connect(cv2.ei, b23.n)
-        connect(b23.p, cv3.ei)
-        connect(cv3.ei, ebb.ei)
-        connect(cv3.ei, e)
-    end
+
+    @named eeb      = ElectrodeElectrolyteBoundary(; A=A, h=1.5e-9, ϕ_we=ϕ_we, sc₁=sc₁, sc₂=sc₂, sc₃=sc₃, sc₄=sc₄, κ₁=κ₁, κ₂=κ₂, κ₃=κ₃, κ₄=κ₄, eps_r=eps_r, v₁=v₁, v₂=v₂, v₃=v₃, v₄=v₄, Gf₁=Gf₁, Gf₂=Gf₂, Gf₃=Gf₃, Gf₄=Gf₄, M₁=M₁, M₂=M₂, M₃=M₃, M₄=M₄, DC₁=DC₁, DC₂=DC₂, DC₃=DC₃, DC₄=DC₄, RT=RT, z₁=z₁, z₂=z₂, z₃=z₃, z₄=z₄)
+    @named cv[1:N]  = ElectrolyteControlVolume(; V=1.0e-9, κ₁=κ₁, κ₂=κ₂, κ₃=κ₃, κ₄=κ₄, eps_r=eps_r, v₁=v₁, v₂=v₂, v₃=v₃, v₄=v₄, Gf₁=Gf₁, Gf₂=Gf₂, Gf₃=Gf₃, Gf₄=Gf₄, M₁=M₁, M₂=M₂, M₃=M₃, M₄=M₄, DC₁=DC₁, DC₂=DC₂, DC₃=DC₃, DC₄=DC₄, RT=RT, z₁=z₁, z₂=z₂, z₃=z₃, z₄=z₄)
+    @named b[1:N-1] = ElectrolyteControlVolumeBoundary(; A=A, h=1.0e-9, κ₁=κ₁, κ₂=κ₂, κ₃=κ₃, κ₄=κ₄, eps_r=eps_r, v₁=v₁, v₂=v₂, v₃=v₃, v₄=v₄, Gf₁=Gf₁, Gf₂=Gf₂, Gf₃=Gf₃, Gf₄=Gf₄, M₁=M₁, M₂=M₂, M₃=M₃, M₄=M₄, DC₁=DC₁, DC₂=DC₂, DC₃=DC₃, DC₄=DC₄, RT=RT, z₁=z₁, z₂=z₂, z₃=z₃, z₄=z₄)
+    #cv  = [ElectrolyteControlVolume(; V=1.0e-3, κ₁=κ₁, κ₂=κ₂, κ₃=κ₃, κ₄=κ₄, eps_r=eps_r, v₁=v₁, v₂=v₂, v₃=v₃, v₄=v₄, Gf₁=Gf₁, Gf₂=Gf₂, Gf₃=Gf₃, Gf₄=Gf₄, M₁=M₁, M₂=M₂, M₃=M₃, M₄=M₄, DC₁=DC₁, DC₂=DC₂, DC₃=DC₃, DC₄=DC₄, RT=RT, z₁=z₁, z₂=z₂, z₃=z₃, z₄=z₄, name=Symbol(:cv, i)) for i in 1:N]
+    #b   = [ElectrolyteControlVolumeBoundary(; A=A, h=1.0e-3, κ₁=κ₁, κ₂=κ₂, κ₃=κ₃, κ₄=κ₄, eps_r=eps_r, v₁=v₁, v₂=v₂, v₃=v₃, v₄=v₄, Gf₁=Gf₁, Gf₂=Gf₂, Gf₃=Gf₃, Gf₄=Gf₄, M₁=M₁, M₂=M₂, M₃=M₃, M₄=M₄, DC₁=DC₁, DC₂=DC₂, DC₃=DC₃, DC₄=DC₄, RT=RT, z₁=z₁, z₂=z₂, z₃=z₃, z₄=z₄, name=Symbol(:b, i)) for i in 1:N-1]
+    @named ebb       = ElectrolyteBulkBoundary(; A=A, h=1.5e-9, C_bulk₁=C_bulk₁, C_bulk₂=C_bulk₂, C_bulk₃=C_bulk₃, C_bulk₄=C_bulk₄, κ₁=κ₁, κ₂=κ₂, κ₃=κ₃, κ₄=κ₄, eps_r=eps_r, v₁=v₁, v₂=v₂, v₃=v₃, v₄=v₄, Gf₁=Gf₁, Gf₂=Gf₂, Gf₃=Gf₃, Gf₄=Gf₄, M₁=M₁, M₂=M₂, M₃=M₃, M₄=M₄, DC₁=DC₁, DC₂=DC₂, DC₃=DC₃, DC₄=DC₄, RT=RT, z₁=z₁, z₂=z₂, z₃=z₃, z₄=z₄)
+
+    eqs = [
+        connect(eeb.ei, cv[1].ei),
+        [connect(cv[i].ei, b[i].n) for i in 1:N-1]...,
+        [connect(b[i].p, cv[i+1].ei) for i in 1:N-1]...,
+        connect(cv[N].ei, ebb.ei)
+    ]
+    ODESystem(eqs, t, [], ps; systems=[eeb, cv..., b..., ebb], name)
 end
+
 
 defaults = Dict(
     "ϕ_we" => -0.0,
@@ -638,68 +738,114 @@ defaults = Dict(
     "sc₄" => 0,
 )
 
-@mtkbuild test = System(; 
-    ϕ_we    = defaults["ϕ_we"],
-    ϕ_bulk  = defaults["ϕ_bulk"],
-    p_bulk  = defaults["p_bulk"],
-    C_bulk₁ = defaults["C_bulk₁"],
-    C_bulk₂ = defaults["C_bulk₂"],
-    C_bulk₃ = defaults["C_bulk₃"],
-    C_bulk₄ = defaults["C_bulk₄"],
-    κ₁      = defaults["κ₁"],
-    κ₂      = defaults["κ₂"],
-    κ₃      = defaults["κ₃"],
-    κ₄      = defaults["κ₄"],
-    A       = defaults["A"],
-    eps_r   = defaults["eps_r"],
-    v₁      = defaults["v₁"],
-    v₂      = defaults["v₂"],
-    v₃      = defaults["v₃"],
-    v₄      = defaults["v₄"],
-    Gf₁     = defaults["Gf₁"],
-    Gf₂     = defaults["Gf₂"],
-    Gf₃     = defaults["Gf₃"],
-    Gf₄     = defaults["Gf₄"],
-    M₁      = defaults["M₁"],
-    M₂      = defaults["M₂"],
-    M₃      = defaults["M₃"],
-    M₄      = defaults["M₄"],
-    RT      = defaults["RT"],
-    DC₁     = defaults["DC₁"],
-    DC₂     = defaults["DC₂"],
-    DC₃     = defaults["DC₃"],
-    DC₄     = defaults["DC₄"],
-    z₁      = defaults["z₁"],
-    z₂      = defaults["z₂"],
-    z₃      = defaults["z₃"],
-    z₄      = defaults["z₄"],
-    sc₁     = defaults["sc₁"],
-    sc₂     = defaults["sc₂"],
-    sc₃     = defaults["sc₃"],
-    sc₄     = defaults["sc₄"],
+@named testsys = testsystem(;
+ϕ_we    = defaults["ϕ_we"],
+ϕ_bulk  = defaults["ϕ_bulk"],
+p_bulk  = defaults["p_bulk"],
+C_bulk₁ = defaults["C_bulk₁"],
+C_bulk₂ = defaults["C_bulk₂"],
+C_bulk₃ = defaults["C_bulk₃"],
+C_bulk₄ = defaults["C_bulk₄"],
+κ₁      = defaults["κ₁"],
+κ₂      = defaults["κ₂"],
+κ₃      = defaults["κ₃"],
+κ₄      = defaults["κ₄"],
+A       = defaults["A"],
+eps_r   = defaults["eps_r"],
+v₁      = defaults["v₁"],
+v₂      = defaults["v₂"],
+v₃      = defaults["v₃"],
+v₄      = defaults["v₄"],
+Gf₁     = defaults["Gf₁"],
+Gf₂     = defaults["Gf₂"],
+Gf₃     = defaults["Gf₃"],
+Gf₄     = defaults["Gf₄"],
+M₁      = defaults["M₁"],
+M₂      = defaults["M₂"],
+M₃      = defaults["M₃"],
+M₄      = defaults["M₄"],
+RT      = defaults["RT"],
+DC₁     = defaults["DC₁"],
+DC₂     = defaults["DC₂"],
+DC₃     = defaults["DC₃"],
+DC₄     = defaults["DC₄"],
+z₁      = defaults["z₁"],
+z₂      = defaults["z₂"],
+z₃      = defaults["z₃"],
+z₄      = defaults["z₄"],
+sc₁     = defaults["sc₁"],
+sc₂     = defaults["sc₂"],
+sc₃     = defaults["sc₃"],
+sc₄     = defaults["sc₄"],
+N = 10
 )
 
-u0init = [
-    test.cv1.C₁ => 1000.0,   
-    test.cv2.C₁ => 1000.0, 
-    test.cv3.C₁ => 1000.0, 
-    test.cv1.C₂ => 100.0, 
-    test.cv2.C₂ => 100.0, 
-    test.cv3.C₂ => 100.0, 
-    test.cv1.C₃ => 100.0, 
-    test.cv2.C₃ => 100.0, 
-    test.cv3.C₃ => 100.0, 
-    test.cv1.C₄ => 750.0, 
-    test.cv2.C₄ => 750.0, 
-    test.cv3.C₄ => 750.0, 
-    test.ebb.ei.Dflux => 0.0
-]
+# @mtkbuild test = System(; 
+#     ϕ_we    = defaults["ϕ_we"],
+#     ϕ_bulk  = defaults["ϕ_bulk"],
+#     p_bulk  = defaults["p_bulk"],
+#     C_bulk₁ = defaults["C_bulk₁"],
+#     C_bulk₂ = defaults["C_bulk₂"],
+#     C_bulk₃ = defaults["C_bulk₃"],
+#     C_bulk₄ = defaults["C_bulk₄"],
+#     κ₁      = defaults["κ₁"],
+#     κ₂      = defaults["κ₂"],
+#     κ₃      = defaults["κ₃"],
+#     κ₄      = defaults["κ₄"],
+#     A       = defaults["A"],
+#     eps_r   = defaults["eps_r"],
+#     v₁      = defaults["v₁"],
+#     v₂      = defaults["v₂"],
+#     v₃      = defaults["v₃"],
+#     v₄      = defaults["v₄"],
+#     Gf₁     = defaults["Gf₁"],
+#     Gf₂     = defaults["Gf₂"],
+#     Gf₃     = defaults["Gf₃"],
+#     Gf₄     = defaults["Gf₄"],
+#     M₁      = defaults["M₁"],
+#     M₂      = defaults["M₂"],
+#     M₃      = defaults["M₃"],
+#     M₄      = defaults["M₄"],
+#     RT      = defaults["RT"],
+#     DC₁     = defaults["DC₁"],
+#     DC₂     = defaults["DC₂"],
+#     DC₃     = defaults["DC₃"],
+#     DC₄     = defaults["DC₄"],
+#     z₁      = defaults["z₁"],
+#     z₂      = defaults["z₂"],
+#     z₃      = defaults["z₃"],
+#     z₄      = defaults["z₄"],
+#     sc₁     = defaults["sc₁"],
+#     sc₂     = defaults["sc₂"],
+#     sc₃     = defaults["sc₃"],
+#     sc₄     = defaults["sc₄"],
+# )
 
-prob = SteadyStateProblem(
-    test, 
-    u0init,
-    [test.ϕ_we=>-1.0]
-)
+# u0init = [
+#     test.cv1.C₁ => 1000.0,   
+#     test.cv2.C₁ => 1000.0, 
+#     test.cv3.C₁ => 1000.0, 
+#     test.cv1.C₂ => 100.0, 
+#     test.cv2.C₂ => 100.0, 
+#     test.cv3.C₂ => 100.0, 
+#     test.cv1.C₃ => 100.0, 
+#     test.cv2.C₃ => 100.0, 
+#     test.cv3.C₃ => 100.0, 
+#     test.cv1.C₄ => 750.0, 
+#     test.cv2.C₄ => 750.0, 
+#     test.cv3.C₄ => 750.0, 
+#     test.ebb.ei.Dflux => 0.0
+# ]
+
+# prob = SteadyStateProblem(
+#     test, 
+#     u0init,
+#     [test.ϕ_we=>-1.0]
+# )
+
+#@named testsys = testsystem() 
+testsys = structural_simplify(testsys)
+prob = SteadyStateProblem(testsys, [], [testsys.ϕ_we => -0.0005])
 
 sol = solve(prob, DynamicSS(Rodas5P()))
 
@@ -724,7 +870,7 @@ sol = solve(prob, DynamicSS(Rodas5P()))
 #         q
 #     end
 #     @components begin
-#         A = ModelA(p=p, q=q)
+#         A = ModelA(p=scalarize(p), q=q)
 #     end
 # end
 
