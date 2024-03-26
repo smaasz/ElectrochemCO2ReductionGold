@@ -1,9 +1,8 @@
 using DrWatson
-@quickactivate "ElectrchemCO2ReductionGold"
+@quickactivate :ElectrochemCO2ReductionGold
 using LessUnitful
 using JLD2
 
-include(srcdir("FullyResolved.jl"))
 
 const μ° = zeros(Float64, 1, nc)
 μ°[:, iK⁺]     = [0.0         ] .* ph"N_A"

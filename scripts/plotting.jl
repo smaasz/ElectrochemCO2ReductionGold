@@ -1,8 +1,7 @@
 using DrWatson
-@quickactivate "ElectrchemCO2ReductionGold"
+@quickactivate :ElectrochemCO2ReductionGold
+using ExtendableGrids
 using Plots, LessUnitful, Printf
-
-include(srcdir("FullyResolved.jl"))
 
 const species  = Vector{@NamedTuple{name::String, color::Symbol}}(undef, nc)
 species[iK⁺]    = (; name = "K⁺", color = :orange)
@@ -38,6 +37,7 @@ end
 
 for datafile in readdir(datadir("sims"))
     d = wload(datadir("sims", datafile))
+    solutiongrid = d["solutiongrid"]
     
     # plot IV curve
     p = plot(d["voltages"], [j[iOH⁻] ./ S .* ph"N_A * e" ./ ufac"mA / cm^2" for j in d["j_we"]], title = "IV Sweep", xlabel = "Voltage [V]", ylabel = "Current [mA / cm²]")

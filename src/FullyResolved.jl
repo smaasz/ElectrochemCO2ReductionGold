@@ -1,8 +1,3 @@
-using DrWatson
-@quickactivate "ElectrochemCO2ReductionGold"
-using LiquidElectrolytes, ExtendableGrids, PreallocationTools, LessUnitful
-using VoronoiFVM, ForwardDiff
-
 @kwdef mutable struct ElectrolyteData <: AbstractElectrolyteData
     "Number of ionic species."
     nc::Int
@@ -525,26 +520,27 @@ function halfcellbc(
 end
 
 
-################### Utility Functions ###########################
+begin ################### Utility Functions ###########################
 
-isprotonorhydroxide(ia) = (ia == iOH⁻ || ia == iH⁺)
+	isprotonorhydroxide(ia) = (ia == iOH⁻ || ia == iH⁺)
 
-function cVₛ_barcₛ(cₛ, data)
-	(; ω, ωM, aM) = data
-	cVₛ = ωM / aM - sum(ω .* cₛ)
-	c̅ₛ  = sum(cₛ) + cVₛ
-	cVₛ, c̅ₛ
+	function cVₛ_barcₛ(cₛ, data)
+		(; ω, ωM, aM) = data
+		cVₛ = ωM / aM - sum(ω .* cₛ)
+		c̅ₛ  = sum(cₛ) + cVₛ
+		cVₛ, c̅ₛ
+	end
+
+	function surface_chemical_potential(cₛ, c̅ₛ, cVₛ, ω, data)
+		(; RT) = data
+		RT * rlog(cₛ/c̅ₛ, data) - ω * RT * rlog(cVₛ/c̅ₛ, data)
+	end
+
+	function surfacefraction(ia, cₛ, data)
+		(; na, ω, ωM, aM) = data
+		cVₛ = ωM / aM - sum(ω .* cₛ)
+		c̅ₛ  = sum(cₛ) + cVₛ
+		ia == 0 ? cVₛ / c̅ₛ : cₛ[ia] / c̅ₛ
+	end
+
 end
-
-function surface_chemical_potential(cₛ, c̅ₛ, cVₛ, ω, data)
-	(; RT) = data
-	RT * rlog(cₛ/c̅ₛ, data) - ω * RT * rlog(cVₛ/c̅ₛ, data)
-end
-
-function surfacefraction(ia, cₛ, data)
-	(; na, ω, ωM, aM) = data
-	cVₛ = ωM / aM - sum(ω .* cₛ)
-	c̅ₛ  = sum(cₛ) + cVₛ
-	ia == 0 ? cVₛ / c̅ₛ : cₛ[ia] / c̅ₛ
-end
-

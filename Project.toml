@@ -1,4 +1,4 @@
-name = "ElectrchemCO2ReductionGold"
+name = "ElectrochemCO2ReductionGold"
 authors = ["Steffen Maass <maassstef@gmail.com>"]
 
 [deps]
