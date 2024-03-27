@@ -3,7 +3,7 @@ using DrWatson
 using ExtendableGrids
 using Plots, LessUnitful, Printf
 
-const species  = Vector{@NamedTuple{name::String, color::Symbol}}(undef, nc)
+species  = Vector{@NamedTuple{name::String, color::Symbol}}(undef, nc)
 species[iK⁺]    = (; name = "K⁺", color = :orange)
 species[iH⁺]    = (; name = "H⁺", color = :gray)
 species[iHCO₃⁻] = (; name = "HCO₃⁻", color = :brown)
@@ -35,8 +35,8 @@ function cmovie(solutiongrid, solutions, vs)
 end
 
 
-for datafile in readdir(datadir("sims"))
-    d = wload(datadir("sims", datafile))
+for datafile in readdir(datadir("sims", "solvationtest"))
+    d = wload(datadir("sims", "solvationtest", datafile))
     solutiongrid = d["solutiongrid"]
     
     # plot IV curve
