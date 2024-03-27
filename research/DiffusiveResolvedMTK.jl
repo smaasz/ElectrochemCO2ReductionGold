@@ -5,6 +5,7 @@ import ChainRulesCore
 
 using ModelingToolkit: t, D, scalarize
 using DifferentialEquations
+using ExtendableGrids: simplexgrid
 
 
 ######### Some functions ###################
@@ -487,12 +488,12 @@ end
         dC₃ ~ C_bulk₃ - ei.C₃
         dC₄ ~ C_bulk₄ - ei.C₄
 
-        ei.Nflux₁ ~ A / h * (DC₁ * dC₁)
-        ei.Nflux₂ ~ A / h * (DC₂ * dC₂)
-        ei.Nflux₃ ~ A / h * (DC₃ * dC₃)
-        ei.Nflux₄ ~ A / h * (DC₄ * dC₄)
-        ei.Dflux ~ A / h * (-eps_r * eps_0 * dϕ)
-        ei.sflux ~ A / h * (dp + qf * dϕ) 
+        ei.Nflux₁ ~ -A / h * (DC₁ * dC₁)
+        ei.Nflux₂ ~ -A / h * (DC₂ * dC₂)
+        ei.Nflux₃ ~ -A / h * (DC₃ * dC₃)
+        ei.Nflux₄ ~ -A / h * (DC₄ * dC₄)
+        ei.Dflux  ~ -A / h * (-eps_r * eps_0 * dϕ)
+        ei.sflux  ~ -A / h * (dp + qf * dϕ) 
     end
 end
 
@@ -519,15 +520,15 @@ end
         dϕ(t),  [unit = u"V"]
     end
     @equations begin
-        dϕ ~ ϕ_we - ei.ϕ
+        dϕ ~ ei.ϕ - ϕ_we 
         dG ~ sc₁ * μ₁ + sc₂ * μ₂ + sc₃ * μ₃ + sc₄ * μ₄ - F * dϕ #sum([sci * μi for (sci, μi) in zip(sc, μ)]) - F * dϕ
         
         RR ~ rrate(R0, β, -dG, RT, trunc)
         
-        ei.Nflux₁ ~ 0.0
-        ei.Nflux₂ ~ -RR * A
-        ei.Nflux₃ ~ RR * A
-        ei.Nflux₄ ~ 0.0
+        ei.Nflux₁ ~ sc₁ * RR * A
+        ei.Nflux₂ ~ sc₁ * RR * A
+        ei.Nflux₃ ~ sc₁ * RR * A
+        ei.Nflux₄ ~ sc₁ * RR * A
         
         #ei.Dflux ~ A / h * (-eps_r * eps_0 * dϕ)
         ei.Dflux ~ A / h * (-eps_r * eps_0 * dϕ)
@@ -597,7 +598,7 @@ end
 #     end
 # end
 
-function testsystem(;
+function testsystem(grid;
     ϕ_we   ,# = defaults["ϕ_we"],
     ϕ_bulk ,# = defaults["ϕ_bulk"],
     p_bulk ,# = defaults["p_bulk"],
@@ -637,61 +638,68 @@ function testsystem(;
     sc₃    ,# = defaults["sc₃"],
     sc₄    ,# = defaults["sc₄"],
     name, 
-    N=3
 )
+    hs = grid[CellVolumes]  
+    Vs = [[hs[1] / 2]; [hs[i] / 2 + hs[i+1] / 2 for i in eachindex(hs[1:end-1])]; [hs[end] / 2]] .* A
     ps = @parameters begin
         ϕ_we     = ϕ_we    ,[description = "electric potential at working electrode", unit = u"V"]
-        ϕ_bulk   = ϕ_bulk  ,[description = "electric potential in the bulk", unit = u"V"]
-        p_bulk   = p_bulk  ,[description = "pressure in the bulk", unit = u"Pa"]
-        C_bulk₁  = C_bulk₁ ,[description = "bulk concentrations", unit = u"mol / m^3"]
-        C_bulk₂  = C_bulk₂ ,[description = "bulk concentrations", unit = u"mol / m^3"]
-        C_bulk₃  = C_bulk₃ ,[description = "bulk concentrations", unit = u"mol / m^3"]
-        C_bulk₄  = C_bulk₄ ,[description = "bulk concentrations", unit = u"mol / m^3"]
-        A        = A       ,[description = "crossectional area", unit = u"m^2"]
-        κ₁       = κ₁      ,[description = "solvation number", unit=u"1"]
-        κ₂       = κ₂      ,[description = "solvation number", unit=u"1"]
-        κ₃       = κ₃      ,[description = "solvation number", unit=u"1"]
-        κ₄       = κ₄      ,[description = "solvation number", unit=u"1"]
-        eps_r    = eps_r   ,[unit = u"1"]
-        v₁       = v₁      ,[unit = u"m^3 / mol"]
-        v₂       = v₂      ,[unit = u"m^3 / mol"]
-        v₃       = v₃      ,[unit = u"m^3 / mol"]
-        v₄       = v₄      ,[unit = u"m^3 / mol"]
-        Gf₁      = Gf₁     ,[unit = u"J / mol"]
-        Gf₂      = Gf₂     ,[unit = u"J / mol"]
-        Gf₃      = Gf₃     ,[unit = u"J / mol"]
-        Gf₄      = Gf₄     ,[unit = u"J / mol"]
-        M₁       = M₁      ,[unit = u"kg / mol"]
-        M₂       = M₂      ,[unit = u"kg / mol"]
-        M₃       = M₃      ,[unit = u"kg / mol"]
-        M₄       = M₄      ,[unit = u"kg / mol"]
-        RT       = RT      ,[unit = u"m^2 * kg / s^2 / mol"]
-        DC₁      = DC₁     ,[unit = u"m^2 / s"]
-        DC₂      = DC₂     ,[unit = u"m^2 / s"]
-        DC₃      = DC₃     ,[unit = u"m^2 / s"]
-        DC₄      = DC₄     ,[unit = u"m^2 / s"]
-        z₁       = z₁      ,[description = "charge numbers", unit = u"1"]
-        z₂       = z₂      ,[description = "charge numbers", unit = u"1"]
-        z₃       = z₃      ,[description = "charge numbers", unit = u"1"]
-        z₄       = z₄      ,[description = "charge numbers", unit = u"1"]
-        sc₁      = sc₁     ,[description = "stoichiometric coefficients of the boundary reaction", unit=u"1"]
-        sc₂      = sc₂     ,[description = "stoichiometric coefficients of the boundary reaction", unit=u"1"]
-        sc₃      = sc₃     ,[description = "stoichiometric coefficients of the boundary reaction", unit=u"1"]
-        sc₄      = sc₄     ,[description = "stoichiometric coefficients of the boundary reaction", unit=u"1"]
+    #     ϕ_bulk   = ϕ_bulk  ,[description = "electric potential in the bulk", unit = u"V"]
+    #     p_bulk   = p_bulk  ,[description = "pressure in the bulk", unit = u"Pa"]
+    #     C_bulk₁  = C_bulk₁ ,[description = "bulk concentrations", unit = u"mol / m^3"]
+    #     C_bulk₂  = C_bulk₂ ,[description = "bulk concentrations", unit = u"mol / m^3"]
+    #     C_bulk₃  = C_bulk₃ ,[description = "bulk concentrations", unit = u"mol / m^3"]
+    #     C_bulk₄  = C_bulk₄ ,[description = "bulk concentrations", unit = u"mol / m^3"]
+    #     A        = A       ,[description = "crossectional area", unit = u"m^2"]
+    #     κ₁       = κ₁      ,[description = "solvation number", unit=u"1"]
+    #     κ₂       = κ₂      ,[description = "solvation number", unit=u"1"]
+    #     κ₃       = κ₃      ,[description = "solvation number", unit=u"1"]
+    #     κ₄       = κ₄      ,[description = "solvation number", unit=u"1"]
+    #     eps_r    = eps_r   ,[unit = u"1"]
+    #     v₁       = v₁      ,[unit = u"m^3 / mol"]
+    #     v₂       = v₂      ,[unit = u"m^3 / mol"]
+    #     v₃       = v₃      ,[unit = u"m^3 / mol"]
+    #     v₄       = v₄      ,[unit = u"m^3 / mol"]
+    #     Gf₁      = Gf₁     ,[unit = u"J / mol"]
+    #     Gf₂      = Gf₂     ,[unit = u"J / mol"]
+    #     Gf₃      = Gf₃     ,[unit = u"J / mol"]
+    #     Gf₄      = Gf₄     ,[unit = u"J / mol"]
+    #     M₁       = M₁      ,[unit = u"kg / mol"]
+    #     M₂       = M₂      ,[unit = u"kg / mol"]
+    #     M₃       = M₃      ,[unit = u"kg / mol"]
+    #     M₄       = M₄      ,[unit = u"kg / mol"]
+    #     RT       = RT      ,[unit = u"m^2 * kg / s^2 / mol"]
+    #     DC₁      = DC₁     ,[unit = u"m^2 / s"]
+    #     DC₂      = DC₂     ,[unit = u"m^2 / s"]
+    #     DC₃      = DC₃     ,[unit = u"m^2 / s"]
+    #     DC₄      = DC₄     ,[unit = u"m^2 / s"]
+    #     z₁       = z₁      ,[description = "charge numbers", unit = u"1"]
+    #     z₂       = z₂      ,[description = "charge numbers", unit = u"1"]
+    #     z₃       = z₃      ,[description = "charge numbers", unit = u"1"]
+    #     z₄       = z₄      ,[description = "charge numbers", unit = u"1"]
+    #     sc₁      = sc₁     ,[description = "stoichiometric coefficients of the boundary reaction", unit=u"1"]
+    #     sc₂      = sc₂     ,[description = "stoichiometric coefficients of the boundary reaction", unit=u"1"]
+    #     sc₃      = sc₃     ,[description = "stoichiometric coefficients of the boundary reaction", unit=u"1"]
+    #     sc₄      = sc₄     ,[description = "stoichiometric coefficients of the boundary reaction", unit=u"1"]
     end
 
-    @named eeb      = ElectrodeElectrolyteBoundary(; A=A, h=1.5e-9, ϕ_we=ϕ_we, sc₁=sc₁, sc₂=sc₂, sc₃=sc₃, sc₄=sc₄, κ₁=κ₁, κ₂=κ₂, κ₃=κ₃, κ₄=κ₄, eps_r=eps_r, v₁=v₁, v₂=v₂, v₃=v₃, v₄=v₄, Gf₁=Gf₁, Gf₂=Gf₂, Gf₃=Gf₃, Gf₄=Gf₄, M₁=M₁, M₂=M₂, M₃=M₃, M₄=M₄, DC₁=DC₁, DC₂=DC₂, DC₃=DC₃, DC₄=DC₄, RT=RT, z₁=z₁, z₂=z₂, z₃=z₃, z₄=z₄)
-    @named cv[1:N]  = ElectrolyteControlVolume(; V=1.0e-9, κ₁=κ₁, κ₂=κ₂, κ₃=κ₃, κ₄=κ₄, eps_r=eps_r, v₁=v₁, v₂=v₂, v₃=v₃, v₄=v₄, Gf₁=Gf₁, Gf₂=Gf₂, Gf₃=Gf₃, Gf₄=Gf₄, M₁=M₁, M₂=M₂, M₃=M₃, M₄=M₄, DC₁=DC₁, DC₂=DC₂, DC₃=DC₃, DC₄=DC₄, RT=RT, z₁=z₁, z₂=z₂, z₃=z₃, z₄=z₄)
-    @named b[1:N-1] = ElectrolyteControlVolumeBoundary(; A=A, h=1.0e-9, κ₁=κ₁, κ₂=κ₂, κ₃=κ₃, κ₄=κ₄, eps_r=eps_r, v₁=v₁, v₂=v₂, v₃=v₃, v₄=v₄, Gf₁=Gf₁, Gf₂=Gf₂, Gf₃=Gf₃, Gf₄=Gf₄, M₁=M₁, M₂=M₂, M₃=M₃, M₄=M₄, DC₁=DC₁, DC₂=DC₂, DC₃=DC₃, DC₄=DC₄, RT=RT, z₁=z₁, z₂=z₂, z₃=z₃, z₄=z₄)
-    #cv  = [ElectrolyteControlVolume(; V=1.0e-3, κ₁=κ₁, κ₂=κ₂, κ₃=κ₃, κ₄=κ₄, eps_r=eps_r, v₁=v₁, v₂=v₂, v₃=v₃, v₄=v₄, Gf₁=Gf₁, Gf₂=Gf₂, Gf₃=Gf₃, Gf₄=Gf₄, M₁=M₁, M₂=M₂, M₃=M₃, M₄=M₄, DC₁=DC₁, DC₂=DC₂, DC₃=DC₃, DC₄=DC₄, RT=RT, z₁=z₁, z₂=z₂, z₃=z₃, z₄=z₄, name=Symbol(:cv, i)) for i in 1:N]
-    #b   = [ElectrolyteControlVolumeBoundary(; A=A, h=1.0e-3, κ₁=κ₁, κ₂=κ₂, κ₃=κ₃, κ₄=κ₄, eps_r=eps_r, v₁=v₁, v₂=v₂, v₃=v₃, v₄=v₄, Gf₁=Gf₁, Gf₂=Gf₂, Gf₃=Gf₃, Gf₄=Gf₄, M₁=M₁, M₂=M₂, M₃=M₃, M₄=M₄, DC₁=DC₁, DC₂=DC₂, DC₃=DC₃, DC₄=DC₄, RT=RT, z₁=z₁, z₂=z₂, z₃=z₃, z₄=z₄, name=Symbol(:b, i)) for i in 1:N-1]
-    @named ebb       = ElectrolyteBulkBoundary(; A=A, h=1.5e-9, C_bulk₁=C_bulk₁, C_bulk₂=C_bulk₂, C_bulk₃=C_bulk₃, C_bulk₄=C_bulk₄, κ₁=κ₁, κ₂=κ₂, κ₃=κ₃, κ₄=κ₄, eps_r=eps_r, v₁=v₁, v₂=v₂, v₃=v₃, v₄=v₄, Gf₁=Gf₁, Gf₂=Gf₂, Gf₃=Gf₃, Gf₄=Gf₄, M₁=M₁, M₂=M₂, M₃=M₃, M₄=M₄, DC₁=DC₁, DC₂=DC₂, DC₃=DC₃, DC₄=DC₄, RT=RT, z₁=z₁, z₂=z₂, z₃=z₃, z₄=z₄)
+    @named eeb = ElectrodeElectrolyteBoundary(; A=A, h=hs[1], ϕ_we=ϕ_we, sc₁=sc₁, sc₂=sc₂, sc₃=sc₃, sc₄=sc₄, κ₁=κ₁, κ₂=κ₂, κ₃=κ₃, κ₄=κ₄, eps_r=eps_r, v₁=v₁, v₂=v₂, v₃=v₃, v₄=v₄, Gf₁=Gf₁, Gf₂=Gf₂, Gf₃=Gf₃, Gf₄=Gf₄, M₁=M₁, M₂=M₂, M₃=M₃, M₄=M₄, DC₁=DC₁, DC₂=DC₂, DC₃=DC₃, DC₄=DC₄, RT=RT, z₁=z₁, z₂=z₂, z₃=z₃, z₄=z₄)
+    cv = ODESystem[]
+    for (i, V) in enumerate(Vs[2:end-1])
+        push!(cv, ElectrolyteControlVolume(; V=V, κ₁=κ₁, κ₂=κ₂, κ₃=κ₃, κ₄=κ₄, eps_r=eps_r, v₁=v₁, v₂=v₂, v₃=v₃, v₄=v₄, Gf₁=Gf₁, Gf₂=Gf₂, Gf₃=Gf₃, Gf₄=Gf₄, M₁=M₁, M₂=M₂, M₃=M₃, M₄=M₄, DC₁=DC₁, DC₂=DC₂, DC₃=DC₃, DC₄=DC₄, RT=RT, z₁=z₁, z₂=z₂, z₃=z₃, z₄=z₄, name=Symbol(:cv, i)))
+    end    
+    #@named cv[1:N]  = ElectrolyteControlVolume(; V=1.0e-9, κ₁=κ₁, κ₂=κ₂, κ₃=κ₃, κ₄=κ₄, eps_r=eps_r, v₁=v₁, v₂=v₂, v₃=v₃, v₄=v₄, Gf₁=Gf₁, Gf₂=Gf₂, Gf₃=Gf₃, Gf₄=Gf₄, M₁=M₁, M₂=M₂, M₃=M₃, M₄=M₄, DC₁=DC₁, DC₂=DC₂, DC₃=DC₃, DC₄=DC₄, RT=RT, z₁=z₁, z₂=z₂, z₃=z₃, z₄=z₄)
+    b = ODESystem[]
+    for (i, h) in enumerate(hs[2:end-1])
+        push!(b, ElectrolyteControlVolumeBoundary(; A=A, h=h, κ₁=κ₁, κ₂=κ₂, κ₃=κ₃, κ₄=κ₄, eps_r=eps_r, v₁=v₁, v₂=v₂, v₃=v₃, v₄=v₄, Gf₁=Gf₁, Gf₂=Gf₂, Gf₃=Gf₃, Gf₄=Gf₄, M₁=M₁, M₂=M₂, M₃=M₃, M₄=M₄, DC₁=DC₁, DC₂=DC₂, DC₃=DC₃, DC₄=DC₄, RT=RT, z₁=z₁, z₂=z₂, z₃=z₃, z₄=z₄, name=Symbol(:b, i)))
+    end
+    #@named b[1:N-1] = ElectrolyteControlVolumeBoundary(; A=A, h=h[i], κ₁=κ₁, κ₂=κ₂, κ₃=κ₃, κ₄=κ₄, eps_r=eps_r, v₁=v₁, v₂=v₂, v₃=v₃, v₄=v₄, Gf₁=Gf₁, Gf₂=Gf₂, Gf₃=Gf₃, Gf₄=Gf₄, M₁=M₁, M₂=M₂, M₃=M₃, M₄=M₄, DC₁=DC₁, DC₂=DC₂, DC₃=DC₃, DC₄=DC₄, RT=RT, z₁=z₁, z₂=z₂, z₃=z₃, z₄=z₄)
+    @named ebb = ElectrolyteBulkBoundary(; A=A, h=hs[end], C_bulk₁=C_bulk₁, C_bulk₂=C_bulk₂, C_bulk₃=C_bulk₃, C_bulk₄=C_bulk₄, κ₁=κ₁, κ₂=κ₂, κ₃=κ₃, κ₄=κ₄, eps_r=eps_r, v₁=v₁, v₂=v₂, v₃=v₃, v₄=v₄, Gf₁=Gf₁, Gf₂=Gf₂, Gf₃=Gf₃, Gf₄=Gf₄, M₁=M₁, M₂=M₂, M₃=M₃, M₄=M₄, DC₁=DC₁, DC₂=DC₂, DC₃=DC₃, DC₄=DC₄, RT=RT, z₁=z₁, z₂=z₂, z₃=z₃, z₄=z₄)
 
     eqs = [
         connect(eeb.ei, cv[1].ei),
-        [connect(cv[i].ei, b[i].n) for i in 1:N-1]...,
-        [connect(b[i].p, cv[i+1].ei) for i in 1:N-1]...,
-        connect(cv[N].ei, ebb.ei)
+        [connect(cv.ei, b.n) for (cv, b) in zip(cv[1:end-1], b)]...,
+        [connect(b.p, cv.ei) for (b, cv) in zip(b, cv[2:end])]...,
+        connect(cv[end].ei, ebb.ei)
     ]
     ODESystem(eqs, t, [], ps; systems=[eeb, cv..., b..., ebb], name)
 end
@@ -738,7 +746,8 @@ defaults = Dict(
     "sc₄" => 0,
 )
 
-@named testsys = testsystem(;
+grid = simplexgrid(geomspace(0.0, 1.0e-6, 1.0e-9, 1.0e-7))
+@named testsys = testsystem(grid;
 ϕ_we    = defaults["ϕ_we"],
 ϕ_bulk  = defaults["ϕ_bulk"],
 p_bulk  = defaults["p_bulk"],
@@ -777,7 +786,6 @@ sc₁     = defaults["sc₁"],
 sc₂     = defaults["sc₂"],
 sc₃     = defaults["sc₃"],
 sc₄     = defaults["sc₄"],
-N = 10
 )
 
 # @mtkbuild test = System(; 
@@ -845,7 +853,7 @@ N = 10
 
 #@named testsys = testsystem() 
 testsys = structural_simplify(testsys)
-prob = SteadyStateProblem(testsys, [], [testsys.ϕ_we => -0.0005])
+prob = SteadyStateProblem(testsys, [], [testsys.ϕ_we => -2.1e-2])
 
 sol = solve(prob, DynamicSS(Rodas5P()))
 
@@ -870,7 +878,7 @@ sol = solve(prob, DynamicSS(Rodas5P()))
 #         q
 #     end
 #     @components begin
-#         A = ModelA(p=scalarize(p), q=q)
+#         A = ModelA(p=p, q=q)
 #     end
 # end
 
